@@ -13,8 +13,8 @@ public interface UserDao {
     @Query("SELECT * FROM USER WHERE USERNAME = :username AND PASSWORD = :password")
     User loginOffline(String username, String password);
 
-    @Query("SELECT COUNT(*) FROM USER WHERE USERNAME = :username")
-    int countByUsername(String username);
+    @Query("SELECT * FROM USER WHERE USER_ID = :userId LIMIT 1")
+    User findById(int userId);
 
     @Insert
     void insert(User user);

@@ -26,7 +26,7 @@ public class ApiAdapter {
                     .addConverterFactory(JacksonConverterFactory.create())
                     .client(httpClient)
                     .build();
-            // Crear la interfaz que manejará servicio REST
+            // Crear la interfaz que manejará el servicio REST
             INSTANCE = retrofit.create(ApiService.class);
         }
         return INSTANCE;
