@@ -8,13 +8,13 @@ import pe.edu.pucp.a20190000.myfirstlogin.data.api.base.BaseOutRO;
 public class UserOutRO extends BaseOutRO {
 
     private int userId;
-    private String fullname;
+    private String fullName;
     private String email;
 
-    public UserOutRO(int errorCode, String message, int userId, String fullname, String email) {
+    public UserOutRO(int errorCode, String message, int userId, String fullName, String email) {
         super(errorCode, message);
         this.userId = userId;
-        this.fullname = fullname;
+        this.fullName = fullName;
         this.email = email;
     }
 
@@ -22,8 +22,8 @@ public class UserOutRO extends BaseOutRO {
         return userId;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFullName() {
+        return fullName;
     }
 
     public String getEmail() {

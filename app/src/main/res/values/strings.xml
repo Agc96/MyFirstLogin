@@ -24,6 +24,6 @@
 
     <!-- Mensajes de conexión al API REST -->
     <string name="api_dlg_error_msg_http">Ocurrió un error desconocido.\nCódigo de error: HTTP %d</string>
-    <string name="api_dlg_error_msg_service">El servicio otorgó un error.\nCódigo de error: %d</string>
+    <string name="api_dlg_error_msg_rest">El servicio otorgó un error desconocido.\nCódigo de error: %d</string>
     <string name="api_dlg_error_msg_empty">El servicio no otorgó respuesta.</string>
 </resources>

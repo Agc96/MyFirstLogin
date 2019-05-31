@@ -14,9 +14,9 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String DB_NAME = "myfirstlogin.db";
     private static AppDatabase INSTANCE;
 
-    public static AppDatabase getInstance(Context applicationContext) {
+    public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(applicationContext, AppDatabase.class,
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class,
                     DB_NAME).build();
         }
         return INSTANCE;
