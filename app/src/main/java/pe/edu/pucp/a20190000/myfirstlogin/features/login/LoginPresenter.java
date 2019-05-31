@@ -8,7 +8,6 @@ import pe.edu.pucp.a20190000.myfirstlogin.R;
 import pe.edu.pucp.a20190000.myfirstlogin.data.api.ApiAdapter;
 import pe.edu.pucp.a20190000.myfirstlogin.data.api.in.LoginInRO;
 import pe.edu.pucp.a20190000.myfirstlogin.data.api.out.UserOutRO;
-import pe.edu.pucp.a20190000.myfirstlogin.data.db.entities.User;
 import pe.edu.pucp.a20190000.myfirstlogin.utils.Utilities;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,6 +15,7 @@ import retrofit2.Response;
 
 public class LoginPresenter implements ILoginPresenter {
 
+    private final static String TAG = "MFL_LOGIN_PRESENTER";
     private ILoginView view;
     private String username;
     private String password;
@@ -71,41 +71,48 @@ public class LoginPresenter implements ILoginPresenter {
             // Obtener el objeto JSON
             UserOutRO userOutRO = result.first;
             // Guardar los datos del usuario en la base de datos
-            int userId = userOutRO.getUserId();
-            String names = userOutRO.getFullName();
-            String email = userOutRO.getEmail();
-            User user = new User(userId, names, email, username, password);
-            new UserSaveTask(view, user).execute();
+            new UserSaveTask(view, username, password, userOutRO).execute();
             // Ir a la pantalla de bienvenida
-            view.goToHomePage(names, email);
+            view.goToHomePage(userOutRO.getFullName(), userOutRO.getEmail());
         }
     }
 
     private Pair<UserOutRO, String> validateResponse(Response<UserOutRO> response) {
         Context context = view.getContext();
-        String message;
         // Verificar que la respuesta es satisfactoria
         if (!response.isSuccessful()) {
-            message = Utilities.formatString(context, R.string.api_dlg_error_msg_http, response.code());
-        } else {
-            UserOutRO userOutRO = response.body();
-            // Verificar el contenido de la respuesta en JSON
-            if (userOutRO == null) {
-                message = Utilities.formatString(context, R.string.api_dlg_error_msg_empty);
-            } else {
-                // Verificar que la respuesta no indique un error
-                int errorCode = userOutRO.getErrorCode();
-                if (errorCode == 0) {
-                    return new Pair<>(userOutRO, null);
-                }
-                // Verificar que hay mensaje de error
-                message = userOutRO.getMessage();
-                if (message == null || message.isEmpty()) {
-                    message = Utilities.formatString(context, R.string.api_dlg_error_msg_rest, errorCode);
-                }
-            }
+            String message = Utilities.formatString(context, R.string.api_dlg_error_msg_http,
+                    response.code());
+            return new Pair<>(null, message);
+        }
+        // Verificar el contenido de la respuesta en JSON
+        UserOutRO userOutRO = response.body();
+        if (userOutRO == null) {
+            String message = Utilities.formatString(context, R.string.api_dlg_error_msg_empty);
+            return new Pair<>(null, message);
+        }
+        // Verificar que la respuesta no indique un error
+        int errorCode = userOutRO.getErrorCode();
+        String message = userOutRO.getMessage();
+        if (errorCode == 0) {
+            return new Pair<>(userOutRO, message); // Respuesta sin errores
+        }
+        // Verificar que el mensaje de error no está vacío
+        if (message == null || message.isEmpty()) {
+            message = Utilities.formatString(context, R.string.api_dlg_error_msg_rest, errorCode);
         }
         return new Pair<>(null, message);
     }
 
+    @Override
+    public void loginOffline() {
+        if (username != null && password != null) {
+            new UserLoginTask(view, username, password).execute();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        view = null;
+    }
 }

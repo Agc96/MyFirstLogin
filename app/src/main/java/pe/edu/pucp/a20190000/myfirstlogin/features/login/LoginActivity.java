@@ -1,6 +1,8 @@
 package pe.edu.pucp.a20190000.myfirstlogin.features.login;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,9 +11,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import pe.edu.pucp.a20190000.myfirstlogin.R;
+import pe.edu.pucp.a20190000.myfirstlogin.features.home.HomeActivity;
 import pe.edu.pucp.a20190000.myfirstlogin.utils.Utilities;
 
 public class LoginActivity extends AppCompatActivity implements ILoginView {
+
+    private final static String TAG = "MFL_LOGIN_VIEW";
+    public final static String LOGIN_EXTRA_FULLNAME = "LOGIN_EXTRA_FULLNAME";
+    public final static String LOGIN_EXTRA_EMAIL = "LOGIN_EXTRA_EMAIL";
 
     private EditText mUsername;
     private EditText mPassword;
@@ -55,4 +62,34 @@ public class LoginActivity extends AppCompatActivity implements ILoginView {
                 .setNegativeButton(android.R.string.no, null)
                 .show();
     }
+
+    public void showErrorDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.login_dlg_error_title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+    public void goToHomePage(String fullName, String email) {
+        // Iniciar la actividad principal
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra(LOGIN_EXTRA_FULLNAME, fullName);
+        intent.putExtra(LOGIN_EXTRA_EMAIL, email);
+        startActivity(intent);
+        // Cerrar esta actividad
+        finish();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+
 }

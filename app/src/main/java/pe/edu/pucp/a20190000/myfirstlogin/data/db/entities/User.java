@@ -20,15 +20,15 @@ public class User {
     @ColumnInfo(name = "USERNAME")
     private String username;
 
-    @ColumnInfo(name = "PASSWORD")
-    private String password;
+    @ColumnInfo(name = "HASH")
+    private String hash;
 
-    public User(int userId, String fullName, String email, String username, String password) {
+    public User(int userId, String fullName, String email, String username, String hash) {
         this.userId = userId;
         this.fullName = fullName;
         this.email = email;
         this.username = username;
-        this.password = password;
+        this.hash = hash;
     }
 
     public int getUserId() {
@@ -43,8 +43,7 @@ public class User {
     public String getUsername() {
         return username;
     }
-    public String getPassword() {
-        return password;
+    public String getHash() {
+        return hash;
     }
 }
-
