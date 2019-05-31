@@ -39,24 +39,30 @@ public class LoginActivity extends AppCompatActivity implements ILoginView {
     public void login(View v) {
         // Esconder el teclado
         Utilities.hideKeyboard(this);
-
         // Obtener datos de usuario
         String username = mUsername.getText().toString();
         String password = mPassword.getText().toString();
-
-        // Iniciar sesión y notificar al usuario que se está iniciando sesión
-        mPresenter.loginRest(username, password);
-        Utilities.showMessage(this, R.string.login_msg_loading);
+        // Validar datos del usuario
+        if (mPresenter.verifyLoginData(username, password)) {
+            // Iniciar sesión y notificar al usuario que se está iniciando sesión
+            mPresenter.loginRest(username, password);
+            Utilities.showMessage(this, R.string.login_msg_loading);
+        }
     }
 
     public void askForLoginOffline() {
+        // Preguntar al usuario
         new AlertDialog.Builder(this)
                 .setTitle(R.string.login_dlg_offline_title)
                 .setMessage(R.string.login_dlg_offline_msg)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.loginOffline();
+                        // Obtener datos de usuario
+                        String username = mUsername.getText().toString();
+                        String password = mPassword.getText().toString();
+                        // Iniciar sesión sin conexión
+                        mPresenter.loginOffline(username, password);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)

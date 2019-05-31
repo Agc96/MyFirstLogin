@@ -55,7 +55,8 @@ public class UserLoginTask extends AsyncTask<Void, Void, User> {
         if (user != null) {
             view.goToHomePage(user.getFullName(), user.getEmail());
         } else {
-            Utilities.showMessage(view.getContext(), R.string.login_dlg_error_msg_not_found);
+            String message = Utilities.formatString(view.getContext(), R.string.login_dlg_error_msg_not_found);
+            view.showErrorDialog(message);
         }
     }
 

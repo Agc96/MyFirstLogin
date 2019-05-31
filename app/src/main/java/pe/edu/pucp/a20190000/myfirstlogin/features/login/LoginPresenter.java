@@ -3,6 +3,9 @@ package pe.edu.pucp.a20190000.myfirstlogin.features.login;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
+import android.util.Log;
+
+import java.net.UnknownHostException;
 
 import pe.edu.pucp.a20190000.myfirstlogin.R;
 import pe.edu.pucp.a20190000.myfirstlogin.data.api.ApiAdapter;
@@ -17,56 +20,51 @@ public class LoginPresenter implements ILoginPresenter {
 
     private final static String TAG = "MFL_LOGIN_PRESENTER";
     private ILoginView view;
-    private String username;
-    private String password;
 
     public LoginPresenter(ILoginView view) {
         this.view = view;
-        this.username = null;
-        this.password = null;
     }
 
-    public void loginRest(String username, String password) {
-        // Verificar que los datos sean correctos
-        if (!verifyLoginData(username, password)) return;
-        this.password = password;
-        this.username = username;
-
+    public void loginRest(final String username, final String password) {
         LoginInRO loginInRO = new LoginInRO(ApiAdapter.APPLICATION_NAME, username, password);
         Call<UserOutRO> call = ApiAdapter.getInstance().login(loginInRO);
         call.enqueue(new Callback<UserOutRO>() {
             @Override
             public void onResponse(@NonNull Call<UserOutRO> call, @NonNull Response<UserOutRO> response) {
-                processUserResponse(response);
+                processUserResponse(response, username, password);
             }
             @Override
             public void onFailure(@NonNull Call<UserOutRO> call, @NonNull Throwable t) {
-                view.askForLoginOffline();
+                if (t instanceof UnknownHostException) {
+                    // No se encontró la URL, preguntar si se desea iniciar sesión sin conexión
+                    view.askForLoginOffline();
+                } else {
+                    // Mostrar mensaje de error en el logcat y en un cuadro de diálogo
+                    t.printStackTrace();
+                    view.showErrorDialog(t.getMessage());
+                }
             }
         });
     }
 
-    private boolean verifyLoginData(String username, String password) {
-        if (username.isEmpty()) {
+    public boolean verifyLoginData(String username, String password) {
+        if (username == null || username.isEmpty()) {
             Utilities.showMessage(view.getContext(), R.string.login_msg_username_empty);
             return false;
         }
-        if (password.isEmpty()) {
+        if (password == null || password.isEmpty()) {
             Utilities.showMessage(view.getContext(), R.string.login_msg_password_empty);
             return false;
         }
         return true;
     }
 
-    private void processUserResponse(Response<UserOutRO> response) {
+    private void processUserResponse(Response<UserOutRO> response, String username, String password) {
         // Verificar respuesta del servidor REST
         Pair<UserOutRO, String> result = validateResponse(response);
         if (result.first == null) {
-            // Mostramos el mensaje de error
+            // Mostrar mensaje de error
             view.showErrorDialog(result.second);
-            // Limpiamos los datos ingresados
-            this.username = null;
-            this.password = null;
         } else {
             // Obtener el objeto JSON
             UserOutRO userOutRO = result.first;
@@ -105,8 +103,8 @@ public class LoginPresenter implements ILoginPresenter {
     }
 
     @Override
-    public void loginOffline() {
-        if (username != null && password != null) {
+    public void loginOffline(String username, String password) {
+        if (verifyLoginData(username, password)) {
             new UserLoginTask(view, username, password).execute();
         }
     }

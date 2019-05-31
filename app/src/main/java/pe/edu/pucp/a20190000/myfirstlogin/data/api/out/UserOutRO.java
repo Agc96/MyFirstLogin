@@ -1,5 +1,7 @@
 package pe.edu.pucp.a20190000.myfirstlogin.data.api.out;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import pe.edu.pucp.a20190000.myfirstlogin.data.api.base.BaseOutRO;
@@ -11,7 +13,10 @@ public class UserOutRO extends BaseOutRO {
     private String fullName;
     private String email;
 
-    public UserOutRO(int errorCode, String message, int userId, String fullName, String email) {
+    @JsonCreator
+    public UserOutRO(@JsonProperty("errorCode") int errorCode, @JsonProperty("message") String message,
+                     @JsonProperty("userId") int userId, @JsonProperty("fullName") String fullName,
+                     @JsonProperty("email") String email) {
         super(errorCode, message);
         this.userId = userId;
         this.fullName = fullName;
