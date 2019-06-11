@@ -8,8 +8,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ApiAdapter {
 
-    public static final String APPLICATION_NAME = "MY_FIRST_LOGIN";
-    private static final String BASE_URL = "https://demo2340870.mockable.io/my-first-login-rest/remote/";
+    public static final String APPLICATION_NAME = "MFL_MOBILE";
+    private static final String BASE_URL = "http://192.168.1.31:8080/";
     private static final int TIMEOUT = 90; // seconds (segundos)
     private static ApiService INSTANCE;
 
